@@ -36,13 +36,13 @@ jobs:
         run: |
           sed -i "s|image:.*|image: docker.io/${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}|g" manifests/deployment.yaml
 
-      - name: Commit and push changes
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add manifests/
-          git commit -m "Update image to ${{ github.sha }}"
-          git push
+      # - name: Commit and push changes
+      #   run: |
+      #     git config --global user.name "github-actions"
+      #     git config --global user.email "github-actions@github.com"
+      #     git add manifests/
+      #     git commit -m "Update image to ${{ github.sha }}"
+      #     git push
 
 
 
@@ -59,7 +59,7 @@ jobs:
           rm -rf gitops
           
           # Clone repository using HTTPS URL without token
-          git clone https://github.com/rslim087a/grade-api-gitops.git gitops
+          git clone https://github.com/kosmolito/gitops-cd.git gitops
           cd gitops
           
           if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -75,4 +75,4 @@ jobs:
           git commit -m "Update image to ${{ github.sha }}"
           
           # Push
-          git push -f https://${GIT_TOKEN}@github.com/rslim087a/grade-api-gitops.git main
+          git push -f https://${GIT_TOKEN}@github.com/kosmolito/gitops-cd.git main
