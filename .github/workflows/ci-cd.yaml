@@ -32,19 +32,6 @@ jobs:
             docker.io/${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
             docker.io/${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}
 
-      - name: Update the image tag
-        run: |
-          sed -i "s|image:.*|image: docker.io/${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}|g" manifests/deployment.yaml
-
-      # - name: Commit and push changes
-      #   run: |
-      #     git config --global user.name "github-actions"
-      #     git config --global user.email "github-actions@github.com"
-      #     git add manifests/
-      #     git commit -m "Update image to ${{ github.sha }}"
-      #     git push
-
-
 
       - name: Update GitOps repository
         shell: bash
@@ -62,11 +49,9 @@ jobs:
           git clone https://github.com/kosmolito/gitops-cd.git gitops
           cd gitops
           
-          if [[ "$OSTYPE" == "darwin"* ]]; then
-            sed -i '' "s|image: ghcr.io/${{ github.repository }}:.*|image: ghcr.io/${{ github.repository }}:${{ github.sha }}|g" deployment.yaml
-          else
-            sed -i "s|image: ghcr.io/${{ github.repository }}:.*|image: ghcr.io/${{ github.repository }}:${{ github.sha }}|g" deployment.yaml
-          fi
+
+          # Update the image tag in the deployment.yaml
+          sed -i "s|image:.*|image: docker.io/${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}|g" manifests/deployment.yaml
           
           # Commit changes
           git config --global user.name "GitHub Actions"
