@@ -46,9 +46,11 @@ jobs:
           rm -rf gitops
           
           # Clone repository using HTTPS URL without token
-          git clone https://github.com/kosmolito/gitops-cd.git gitops
-          cd gitops
+          git clone https://github.com/kosmolito/gitops-cd.git gitops-cd
+          cd gitops-cd
           
+          ls -la
+
 
           # Update the image tag in the deployment.yaml
           sed -i "s|image:.*|image: docker.io/${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}|g" manifests/deployment.yaml
