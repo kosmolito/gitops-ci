@@ -1,0 +1,9 @@
+.vscode/*
+*testing*
+*private*
+*vault_password*
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store

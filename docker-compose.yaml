@@ -1,0 +1,13 @@
+services:
+  nginx:
+    image: testapp:latest
+    ports:
+      - "8888:80"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"
+        reservations:
+          cpus: "0.25"
+          memory: "128M"
