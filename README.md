@@ -1,1 +1,1 @@
-# nginx-k8s-app
+# gitos-ci
