@@ -45,30 +45,46 @@ jobs:
             docker.io/${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ steps.vars.outputs.SHA_SHORT }}
 
 
-      - name: Update GitOps repository
-        shell: bash
-        env:
-          GIT_TOKEN: ${{ secrets.GITOPS_PAT }}
+      - name: Trigger GitOps deployment workflow
         run: |
-          # Configure git credential store
-          git config --global credential.helper store
-          echo "https://${GIT_TOKEN}:x-oauth-basic@github.com" > ~/.git-credentials
-          
-          # Remove any existing gitops directory
-          rm -rf gitops
-          
-          # Clone repository using HTTPS URL without token
-          git clone https://github.com/kosmolito/gitops-cd.git gitops-cd
-          cd gitops-cd
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: token ${{ secrets.GITOPS_PAT }}" \
+            https://api.github.com/repos/kosmolito/gitops-cd/dispatches \
+            -d '{
+              "event_type": "deploy",
+              "client_payload": {
+                "image": "docker.io/${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ steps.vars.outputs.SHA_SHORT }}"
+              }
+            }'
 
-          # Update the image tag in the deployment.yaml
-          sed -i "s|image:.*|image: docker.io/${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ steps.vars.outputs.SHA_SHORT }}|g" manifests/deployment.yaml
+
+
+
+      # - name: Update GitOps repository
+      #   shell: bash
+      #   env:
+      #     GIT_TOKEN: ${{ secrets.GITOPS_PAT }}
+      #   run: |
+      #     # Configure git credential store
+      #     git config --global credential.helper store
+      #     echo "https://${GIT_TOKEN}:x-oauth-basic@github.com" > ~/.git-credentials
           
-          # Commit changes
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add manifests/deployment.yaml
-          git commit -m "Update image to ${{ steps.vars.outputs.SHA_SHORT }}"
+      #     # Remove any existing gitops directory
+      #     rm -rf gitops
           
-          # Push
-          git push -f https://${GIT_TOKEN}@github.com/kosmolito/gitops-cd.git main
+      #     # Clone repository using HTTPS URL without token
+      #     git clone https://github.com/kosmolito/gitops-cd.git gitops-cd
+      #     cd gitops-cd
+
+      #     # Update the image tag in the deployment.yaml
+      #     sed -i "s|image:.*|image: docker.io/${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ steps.vars.outputs.SHA_SHORT }}|g" manifests/deployment.yaml
+          
+      #     # Commit changes
+      #     git config --global user.name "GitHub Actions"
+      #     git config --global user.email "actions@github.com"
+      #     git add manifests/deployment.yaml
+      #     git commit -m "Update image to ${{ steps.vars.outputs.SHA_SHORT }}"
+          
+      #     # Push
+      #     git push -f https://${GIT_TOKEN}@github.com/kosmolito/gitops-cd.git main
