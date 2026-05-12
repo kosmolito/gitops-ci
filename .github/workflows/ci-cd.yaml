@@ -54,6 +54,7 @@ jobs:
             -d '{
               "event_type": "deploy",
               "client_payload": {
+                "short_sha": "${{ steps.vars.outputs.SHA_SHORT }}",
                 "image": "docker.io/${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ steps.vars.outputs.SHA_SHORT }}"
               }
             }'
